@@ -20,7 +20,7 @@
 #include <sdktools>
 #include <clientprefs>
 
-#define PLUGIN_VERSION "1.0.0"
+#define PLUGIN_VERSION "1.0.1"
 
 public Plugin myinfo =
 {
@@ -37,6 +37,10 @@ static const char g_sClassKey[11][] = {"", "scout", "sniper", "soldier",
 char g_sModel[11][PLATFORM_MAX_PATH];   // женская модель класса; "" — нет
 Cookie g_hCookie;
 int g_iChoice[MAXPLAYERS + 1][11];      // 1 — женская
+// Ставили ли модель мы. В 1.0.0 сброс SetCustomModel("") шёл каждому
+// игроку на каждом возрождении — и снимал модели других плагинов
+// (prop hunt, VSH и т. п.), которые к полу отношения не имеют.
+bool g_bOurs[MAXPLAYERS + 1];
 
 public void OnPluginStart()
 {
@@ -48,6 +52,11 @@ public void OnPluginStart()
 	HookEvent("post_inventory_application", Ev_Inventory);
 	HookEvent("player_team", Ev_Team);
 	LoadModels();
+	// Перезагрузка плагина посреди карты: выбор игроков — из кук сразу,
+	// а не после перезахода.
+	for (int i = 1; i <= MaxClients; i++)
+		if (IsClientInGame(i) && AreClientCookiesCached(i))
+			OnClientCookiesCached(i);
 }
 
 void LoadModels()
@@ -95,6 +104,7 @@ public void OnClientDisconnect(int client)
 {
 	for (int c = 1; c <= 10; c++)
 		g_iChoice[client][c] = 0;
+	g_bOurs[client] = false;
 }
 
 int PlayerClass(int client)
@@ -124,10 +134,18 @@ void Apply(int client)
 	int team = GetClientTeam(client);
 	char code[PLATFORM_MAX_PATH + 96];
 	if (cls && g_sModel[cls][0] && g_iChoice[client][cls] && (team == 2 || team == 3))
+	{
 		Format(code, sizeof(code),
 			"self.SetCustomModelWithClassAnimations(\"%s\")", g_sModel[cls]);
-	else
+		g_bOurs[client] = true;
+	}
+	else if (g_bOurs[client])
+	{
 		strcopy(code, sizeof(code), "self.SetCustomModel(\"\")");
+		g_bOurs[client] = false;
+	}
+	else
+		return;
 	SetVariantString(code);
 	AcceptEntityInput(client, "RunScriptCode", client, client);
 }

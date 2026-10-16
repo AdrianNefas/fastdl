@@ -17,7 +17,7 @@
 #include <sdktools>
 #include <clientprefs>
 
-#define PLUGIN_VERSION "1.0.0"
+#define PLUGIN_VERSION "1.0.1"
 #define MAX_HATS 64
 #define GUARD "if(!(\"NOWP_Wear\" in getroottable()))IncludeScript(\"nowp_hats\",getroottable());"
 
@@ -231,9 +231,15 @@ public int Menu_Hat(Menu menu, MenuAction action, int client, int item)
 	{
 		char key[8];
 		menu.GetItem(item, key, sizeof(key));
+		// Меню висит 30 с: за это время игрок мог сменить класс, и
+		// шапка чужого класса записалась бы в куку нового (1.0.1).
 		int cls = PlayerClass(client);
-		if (cls)
-			Choose(client, cls, StringToInt(key));
+		int choice = StringToInt(key);
+		if (cls && (choice == 0 || (choice <= g_iHats
+				&& (g_iClassMask[choice - 1] & (1 << cls)))))
+			Choose(client, cls, choice);
+		else if (cls)
+			PrintToChat(client, "[Шапки] Класс сменился — открой !hat ещё раз.");
 	}
 	else if (action == MenuAction_End)
 		delete menu;
@@ -253,6 +259,13 @@ public Action Cmd_Give(int client, int args)
 		return Plugin_Handled;
 	}
 	int cls = PlayerClass(target);
+	// Наблюдатель без класса: куки класса 0 нет (g_hCookie[0] — null),
+	// и Choose падал на ней ошибкой плагина (1.0.1).
+	if (!cls)
+	{
+		ReplyToCommand(client, "[NOWP] у игрока нет класса");
+		return Plugin_Handled;
+	}
 	if (choice > 0 && !(g_iClassMask[choice - 1] & (1 << cls)))
 	{
 		ReplyToCommand(client, "[NOWP] «%s» не для этого класса", g_sName[choice - 1]);
