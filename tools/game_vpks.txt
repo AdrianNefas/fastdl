@@ -1,0 +1,10 @@
+D:\tf2c-test\classified\tf2classified\vpks\tf2c_assets_dir.vpk
+D:\tf2c-test\classified\tf2classified\vpks\tf2c_overrides_dir.vpk
+D:\tf2c-test\classified\tf2classified\vpks\mb2_tf_content_dir.vpk
+D:\tf2c-test\classified\tf2classified\vpks\mb2_shared_content_dir.vpk
+D:\tf2c-test\tf2\tf\tf2_misc_dir.vpk
+D:\tf2c-test\tf2\tf\tf2_textures_dir.vpk
+D:\tf2c-test\tf2\tf\tf2_sound_misc_dir.vpk
+D:\tf2c-test\tf2\tf\tf2_sound_vo_english_dir.vpk
+D:\tf2c-test\tf2\hl2\hl2_misc_dir.vpk
+D:\tf2c-test\tf2\hl2\hl2_textures_dir.vpk

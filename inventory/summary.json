@@ -1,0 +1,12 @@
+{
+ "files": 5986,
+ "mb": 1152.0881605148315,
+ "items": 321,
+ "override_files": 533,
+ "override_mb": 88.91173934936523,
+ "used_by_normal_mb": 969.7401599884033,
+ "only_secret_debug_mb": 45.5637788772583,
+ "orphan_files": 812,
+ "orphan_mb": 130.254319190979,
+ "shared_by_name_mb": 6.529902458190918
+}
