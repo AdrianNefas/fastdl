@@ -45,6 +45,9 @@ SHARED = ("scenes/", "sound/vo/", "particles/")
 # модели, которые атрибуты берут по имени (магазины, снаряды, реквизит
 # насмешек). Без него эти модели не появятся — не вырезать.
 NEVER_EXCLUDE_GROUPS = {"precacher"}
+TAB, NL = chr(9), chr(10)
+# Имя шапки уходит в кавычки KeyValues и в код VScript.
+BAD_NAME_CHARS = (chr(34), ";", chr(92))
 
 
 def read_rules(path: Path | None) -> list[str]:
@@ -168,6 +171,28 @@ def main() -> None:
     cfg.write_text("// New-Old Weapons Pack — файлы для клиентов (FastDL)\n"
                    + "\n".join(client) + "\n", "utf-8")
 
+    # Шапки для плагина nowp_hats: носимое из раздела «Misc» (супер-
+    # секретные шапки автора), кроме вырезанного правилами.
+    cls_key = {"scout": "scout", "soldier": "soldier", "pyro": "pyro",
+               "demoman": "demoman", "heavy": "heavyweapons",
+               "engineer": "engineer", "medic": "medic", "sniper": "sniper",
+               "spy": "spy", "civilian": "civilian"}
+    hats = [it for it in keep_items
+            if "Wearable" in it["tags"] and "Misc" in it["tags"]]
+    kvtxt = ['"nowp_hats"', "{"]
+    for h in hats:
+        if any(ch in h["name"] for ch in BAD_NAME_CHARS):
+            continue
+        cl = " ".join(cls_key.get(c.lower(), c.lower()) for c in h["classes"])
+        kvtxt += [TAB + '"' + h["name"] + '"', TAB + "{",
+                  TAB * 2 + '"id"' + TAB + '"' + h["id"] + '"',
+                  TAB * 2 + '"classes"' + TAB + '"' + cl + '"', TAB + "}"]
+    kvtxt.append("}")
+    (srv / "addons/sourcemod/configs/nowp_hats.cfg").write_text(
+        NL.join(kvtxt) + NL, "utf-8")
+    # Плагины, скрипт и конфиг FastDL из репозитория — в тот же комплект.
+    shutil.copytree(HERE.parent / "server", srv, dirs_exist_ok=True)
+
     print("сжатие bz2:", len(client), "файлов")
     jobs = [(str(loose / f), str(out / "fastdl" / (f + ".bz2")))
             for f in client]
@@ -186,6 +211,7 @@ def main() -> None:
         "client_mb": round(sum(pack.files[f] for f in client) / 2**20, 1),
         "fastdl_bz2_mb": round(sum(sizes) / 2**20, 1),
         "largest_bz2_mb": round(max(sizes) / 2**20, 2) if sizes else 0,
+        "hats_in_menu": len(hats),
         "dropped_unused_mb": round(sum(
             s for f, s in pack.files.items() if f not in keep) / 2**20, 1),
     }
