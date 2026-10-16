@@ -1,3 +1,20 @@
+# Credits — extras (not part of New-Old Weapons Pack)
+
+## Female Medic (`models/player/nowp_female/medic.mdl`)
+
+* Reworked Female Medic — **JuegosPablo**: https://gamebanana.com/mods/194520
+  (credits: kitsuba)
+* Based on New Female Medic — **Shaylyn Hamm (Chemical Alia)**:
+  https://gamebanana.com/mods/194524 (voice: MiraiBaby — voice is not used here)
+* Changes made for this server: the model files are moved from
+  `models/player/medic.*` to `models/player/nowp_female/medic.*` so that it can
+  be chosen per player instead of replacing every Medic; the truncated
+  `female_medic_blue_invun.vmt` was rebuilt from the red one. Refitted
+  cosmetics and the voice pack are not included. Textures are unchanged.
+  Please download the original mods from GameBanana.
+
+---
+
 # Credits — New-Old Weapons Pack
 
 This server hosts **New-Old Weapons Pack v4.3.0** for TF2 Classified only so

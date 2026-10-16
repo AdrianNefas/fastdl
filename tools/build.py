@@ -193,9 +193,28 @@ def main() -> None:
     # Плагины, скрипт и конфиг FastDL из репозитория — в тот же комплект.
     shutil.copytree(HERE.parent / "server", srv, dirs_exist_ok=True)
 
-    print("сжатие bz2:", len(client), "файлов")
+    # Дополнения (extras/<набор>/<путь игры>): женская модель медика и
+    # прочее не из New-Old Weapons Pack. На сервер — отдельной папкой
+    # custom/nowp_extras, клиентам — тем же FastDL.
+    extra_src: dict[str, Path] = {}
+    for f in sorted((HERE.parent / "extras").glob("*/**/*")):
+        if f.is_file():
+            rel = f.relative_to(HERE.parent / "extras")
+            game_path = "/".join(rel.parts[1:]).lower()
+            extra_src[game_path] = f
+    for game_path, f in extra_src.items():
+        dst = srv / "custom" / "nowp_extras" / game_path
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(f, dst)
+    extra_client = sorted(extra_src)
+    with cfg.open("a", encoding="utf-8") as fh:
+        fh.write("// дополнения (extras)\n" + "\n".join(extra_client) + "\n")
+
+    print("сжатие bz2:", len(client) + len(extra_client), "файлов")
     jobs = [(str(loose / f), str(out / "fastdl" / (f + ".bz2")))
             for f in client]
+    jobs += [(str(extra_src[f]), str(out / "fastdl" / (f + ".bz2")))
+             for f in extra_client]
     with ProcessPoolExecutor() as ex:
         sizes = list(ex.map(compress, jobs, chunksize=16))
     (out / "fastdl" / ".nojekyll").write_text("", "utf-8")
@@ -208,6 +227,7 @@ def main() -> None:
         "server_files": len(server),
         "server_mb": round(sum(pack.files[f] for f in server) / 2**20, 1),
         "client_files": len(client),
+        "extras_files": len(extra_client),
         "client_mb": round(sum(pack.files[f] for f in client) / 2**20, 1),
         "fastdl_bz2_mb": round(sum(sizes) / 2**20, 1),
         "largest_bz2_mb": round(max(sizes) / 2**20, 2) if sizes else 0,
