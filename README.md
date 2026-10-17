@@ -66,7 +66,40 @@ FastDL: у клиента скачанное игра ищет последни�
 * `!hat`, `!hats`, `!шапка` — меню шапок текущего класса и «Без шапки»;
 * выбор запоминается за игроком на каждый класс (clientprefs) и
   надевается при каждом появлении и после шкафа снабжения, без дублей;
-* `nowp_hat_give <userid> <номер|0>` — то же за игрока (админ, root).
+* `!hat <слово>` — поиск по имени (1.1.0);
+* `nowp_hat_give <userid> <номер предмета|0>` — то же за игрока (админ,
+  root). До 1.1.0 вторым аргументом был номер в списке.
+
+### Шапки оригинальной TF2 (nowp_hats 1.1.0)
+
+Classified монтирует VPK TF2 (`gameinfo_base.txt`), так что модели шапок
+TF2 у игрока уже есть — нет только записей предметов. Их пишет
+`tools/tf2hats.py` из `items_game.txt` TF2:
+
+```
+python tools/tf2hats.py <TF2>/tf/scripts/items/items_game.txt <TF2>/tf/tf2_misc_dir.vpk <схема NOWP: newoldweaponspack.txt> ../tf2hats-out
+```
+
+* `server/custom/tf2hats/scripts/items/custom_weapons_additions.txt` —
+  886 шапок (слот head; модель есть в VPK TF2; без тех, что уже есть в
+  моде). Имя файла выбрано не нами: его уже подключает `#base` в
+  `custom_items_game.txt` мода; своя папка в `custom/` — чтобы обновление
+  мода её не затёрло.
+* Номера TF2 < 2000 сдвинуты на 20000: в Classified эти номера заняты
+  своими предметами (52 — лук). Номера от 30000 — как в TF2.
+* `server/addons/sourcemod/configs/tf2_hats.cfg` — второй список меню
+  (раздел «Шапки TF2»); `tf2_hats.tsv` — тот же список для режиссёра
+  ботов (репозиторий бота, `setup/tf2dir/tf2_hats.tsv`).
+* `tools/tf2hats_check.py` — сверка на сервере: номера и имена шапок
+  против схемы Classified из его VPK и схем `custom/`. Код 1 — ставить
+  нельзя.
+
+Клиенту файл схемы качается как `scripts/items/custom_weapons_additions.txt`
+(в списке загрузок и в FastDL). Скачанное игра не перезаписывает: если
+файл однажды поменяется, у тех, кто его уже скачал, останется старый.
+
+Не проверено: шапка TF2 на игроке клиентом (видна ли, сидит ли на
+моделях Classified).
 
 Надевает VScript `scripts/vscripts/nowp_hats.nut` через
 `CTFPlayer::GenerateAndWearItem` — у игроков он появился в 3.2.0
