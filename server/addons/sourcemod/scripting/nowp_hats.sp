@@ -4,9 +4,10 @@
  * Шапки мода (21: по две на класс и берет на всех) в меню снаряжения не
  * видны — автор пометил их «Super-Secret». С 1.1.0 к ним добавлены шапки
  * TF2 (~900): Classified монтирует VPK TF2, модели у игрока есть, а
- * записи предметов кладёт custom/tf2hats (tools/tf2hats.py). Плагин даёт
- * меню !hat / !шапка, запоминает выбор игрока на каждый класс и надевает
- * шапку при каждом появлении и после шкафа снабжения.
+ * записи предметов — scripts/items/custom_weapons_additions.txt
+ * (tools/tf2hats.py). Плагин даёт меню !hat / !шапка, запоминает выбор
+ * игрока на каждый класс и надевает шапку при каждом появлении и после
+ * шкафа снабжения.
  *
  * Надевает VScript (scripts/vscripts/nowp_hats.nut): CTFPlayer::
  * GenerateAndWearItem есть у игроков с TF2 Classified 3.2.0. Списки —
@@ -89,7 +90,7 @@ void LoadHats(const char[] file, int src)
 	BuildPath(Path_SM, path, sizeof(path), "configs/%s", file);
 	if (!FileExists(path))
 	{
-		// tf2_hats.cfg необязателен: без схемы custom/tf2hats на сервере
+		// tf2_hats.cfg необязателен: без схемы шапок TF2 на сервере
 		// этих предметов нет, и меню их показывать не должно.
 		if (src == SRC_NOWP)
 			LogError("нет %s — шапок мода в меню не будет", path);

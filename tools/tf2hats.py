@@ -9,10 +9,12 @@
 нечего, нужна только запись предмета в схеме.
 
 На выходе:
-  <выход>/server/custom/tf2hats/scripts/items/custom_weapons_additions.txt
+  <выход>/server/scripts/items/custom_weapons_additions.txt
       — предметы; этот файл схема NOWP уже подключает (#base в
-      custom_items_game.txt), отдельная папка — чтобы обновление мода её
-      не затёрло;
+      custom_items_game.txt). Лежит в папке игры, а не в custom/<своя>:
+      новую папку custom/ игра подключает только при старте сервера, а
+      эту — уже смонтированную — подхватит смена карты; обновление мода
+      её тоже не затрёт;
   <выход>/server/addons/sourcemod/configs/tf2_hats.cfg — меню nowp_hats;
   <выход>/tf2_hats.tsv — номер, имя, классы: список для режиссёра бота.
 
@@ -276,7 +278,7 @@ def main() -> None:
     out = Path(args[3])
     hats, why = collect(tf2, models, nowp, tf2c)
     srv = out / "server"
-    sch = srv / "custom/tf2hats/scripts/items/custom_weapons_additions.txt"
+    sch = srv / "scripts/items/custom_weapons_additions.txt"
     cfg = srv / "addons/sourcemod/configs/tf2_hats.cfg"
     for p in (sch, cfg):
         p.parent.mkdir(parents=True, exist_ok=True)

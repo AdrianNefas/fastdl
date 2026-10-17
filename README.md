@@ -80,11 +80,13 @@ TF2 у игрока уже есть — нет только записей пр�
 python tools/tf2hats.py <TF2>/tf/scripts/items/items_game.txt <TF2>/tf/tf2_misc_dir.vpk <схема NOWP: newoldweaponspack.txt> ../tf2hats-out
 ```
 
-* `server/custom/tf2hats/scripts/items/custom_weapons_additions.txt` —
+* `server/scripts/items/custom_weapons_additions.txt` —
   886 шапок (слот head; модель есть в VPK TF2; без тех, что уже есть в
   моде). Имя файла выбрано не нами: его уже подключает `#base` в
-  `custom_items_game.txt` мода; своя папка в `custom/` — чтобы обновление
-  мода её не затёрло.
+  `custom_items_game.txt` мода. Лежит в папке игры, а не в своей
+  `custom/<папка>`: новую папку в `custom/` игра подключает только при
+  старте сервера, а файл в уже подключённой подхватит смена карты;
+  обновление мода его не затрёт.
 * Номера TF2 < 2000 сдвинуты на 20000: в Classified эти номера заняты
   своими предметами (52 — лук). Номера от 30000 — как в TF2.
 * `server/addons/sourcemod/configs/tf2_hats.cfg` — второй список меню
