@@ -81,8 +81,24 @@ python tools/tf2hats.py <TF2>/tf/scripts/items/items_game.txt <TF2>/tf/tf2_misc_
 ```
 
 * `server/scripts/items/custom_weapons_additions.txt` —
-  886 шапок (слот head; модель есть в VPK TF2; без тех, что уже есть в
-  моде). Имя файла выбрано не нами: его уже подключает `#base` в
+  715 шапок из 886 (слот head; модель есть в VPK TF2; без тех, что уже
+  есть в моде). Полная схема на 886 шапок 17.10.2026 положила сервер:
+  движок при загрузке карты кэширует модели всех предметов схемы, у 886
+  шапок их 2735, а лимит Classified — 4096 моделей на карту (ctf_2fort с
+  20 ботами без шапок занимает 1519). Итог — «PrecacheModel overflow»,
+  segfault. Поэтому после `tf2hats.py` схему урезает
+  `tools/tf2hats_lite.py` до бюджета в 1200 моделей: сначала шапки с
+  одной моделью, потом с несколькими. С ней на ctf_2fort 2716 моделей,
+  pl_frontier_final 2674 (замер на сервере, 17.10.2026):
+
+  ```
+  python tools/tf2hats_lite.py ../tf2hats-out/server/scripts/items/custom_weapons_additions.txt ../tf2hats-out/server/addons/sourcemod/configs/tf2_hats.cfg 1200 ../tf2hats-lite
+  ```
+
+  Новые шапки или модели в схеме — сначала проверить бюджет: в консоли
+  сервера `sv_precacheinfo` на самой тяжёлой карте ротации.
+
+  Имя файла выбрано не нами: его уже подключает `#base` в
   `custom_items_game.txt` мода. Лежит в папке игры, а не в своей
   `custom/<папка>`: новую папку в `custom/` игра подключает только при
   старте сервера, а файл в уже подключённой подхватит смена карты;
@@ -90,7 +106,7 @@ python tools/tf2hats.py <TF2>/tf/scripts/items/items_game.txt <TF2>/tf/tf2_misc_
 * Номера TF2 < 2000 сдвинуты на 20000: в Classified эти номера заняты
   своими предметами (52 — лук). Номера от 30000 — как в TF2.
 * `server/addons/sourcemod/configs/tf2_hats.cfg` — второй список меню
-  (раздел «Шапки TF2»); `tf2_hats.tsv` — тот же список для режиссёра
+  (раздел «Шапки TF2»); тот же урезанный список для режиссёра
   ботов (репозиторий бота, `setup/tf2dir/tf2_hats.tsv`).
 * `tools/tf2hats_check.py` — сверка на сервере: номера и имена шапок
   против схемы Classified из его VPK и схем `custom/`. Код 1 — ставить
